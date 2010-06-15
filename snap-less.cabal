@@ -1,0 +1,38 @@
+Name:                snap-less
+Version:             0.1
+Synopsis:            Less stylesheets with the Snap web framework.
+Description:         A bit of glue code that makes it easy to use Less stylesheets (http://lesscss.org) with Snap (http://snapframework.com).
+Homepage:            http://github.com/duairc/snap-less
+License:             BSD3
+License-file:        LICENSE
+Author:              Shane O'Brien
+Maintainer:          shane@duairc.com
+Stability:           Experimental
+Category:            Web
+Build-type:          Simple
+Cabal-version:       >=1.2
+
+
+Library
+  Exposed-modules: Snap.Less
+  Build-depends:
+      base >= 4,
+      snap-core,
+      process,
+      directory-tree,
+      monads-fd,
+      containers,
+      bytestring,
+      directory
+  -- Modules exported by the library.
+  -- Exposed-modules:     
+  
+  -- Packages needed in order to build this package.
+  -- Build-depends:       
+  
+  -- Modules not exported by this package.
+  -- Other-modules:       
+  
+  -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
+  -- Build-tools:         
+  
