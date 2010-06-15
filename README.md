@@ -14,7 +14,7 @@ In your `Main.hs`, do this:
 
 Now any requests matching `/css/foobar.css` will get served the result of
 putting the file `/stylesheets/foobar.less` in your project directory through
-(http://lesscss.org/)[lessc]. The output of `lessc` is cached, so it isn't
+[http://lesscss.org/](`lessc`). The output of `lessc` is cached, so it isn't
 run on every request. If you want to refresh the cached stylesheets, send a
 request to `/admin/reload/less`. If you want a different reload handler, pass
 your own one to `lessHandler` instead of `lessReloadHandler` (or simply
