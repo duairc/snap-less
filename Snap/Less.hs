@@ -3,7 +3,7 @@ module Snap.Less
     ( LessDirectory
     , newLessDirectory
     , newLessDirectory'
-    , getLessState
+    , getDirectoryLS
 
     , lessHandler
     , lessReloadHandler
@@ -44,8 +44,8 @@ newLessDirectory' :: MonadIO m => FilePath -> m LessDirectory
 newLessDirectory' = (either fail return =<<) . newLessDirectory
 
 
-getLessState  :: MonadIO m => LessDirectory -> m LessState
-getLessState (LessDirectory _ lsMVar) = liftIO $ readMVar lsMVar
+getDirectoryLS  :: MonadIO m => LessDirectory -> m LessState
+getDirectoryLS (LessDirectory _ lsMVar) = liftIO $ readMVar lsMVar
 
 
 loadStylesheet :: FilePath -> IO (Either String ByteString)
@@ -54,8 +54,8 @@ loadStylesheet file = do
     case mLessc of
         Nothing    -> return $ Left "Executable `lessc' could not be found"
         Just lessc -> do
-            (ex, css, _) <- readProcessWithExitCode' lessc [file, stdout] ""
-            return $ if (ex /= ExitSuccess) then Left file else Right css
+            (ex, css, err) <- readProcessWithExitCode' lessc [file, stdout] ""
+            return $ if (ex /= ExitSuccess) then Left (file ++ "\n" ++ B.unpack err) else Right css
   where
     stdout = "/dev/stdout"
 
@@ -89,15 +89,15 @@ findM :: Monad m => (a -> m Bool) -> [a] -> m (Maybe a)
 findM f = liftM (lookup True) . mapM (\x -> f x >>= (\y -> return (y,x)))
 
 
-lessHandler :: LessDirectory
-            -> (LessDirectory -> Snap ())
-            -> (LessState -> Snap ())
-            -> Snap ()
-lessHandler ld reload f = reload ld <|> (f =<< getLessState ld)
+lessHandler :: MonadSnap m
+            => LessDirectory
+            -> (LessDirectory -> m ())
+            -> (LessState -> m ())
+            -> m ()
+lessHandler ld reload f = reload ld <|> (f =<< getDirectoryLS ld)
 
 
-
-lessReloadHandler :: LessDirectory -> Snap ()
+lessReloadHandler :: MonadSnap m => LessDirectory -> m ()
 lessReloadHandler ld = path "admin/reload/less" $ do
     e <- reloadLessDirectory ld
     modifyResponse $ setContentType "text/plain; charset=utf-8"
@@ -110,7 +110,7 @@ reloadLessDirectory (LessDirectory dir lsMVar) = liftIO $ do
     leftPass els $ \ls -> modifyMVar_ lsMVar (const $ return ls)
 
 
-renderLess :: LessState -> Snap ()
+renderLess :: MonadSnap m => LessState -> m ()
 renderLess (LessState m) = do
     file <- liftM rqPathInfo getRequest
     flip (maybe (writeBS $ B.pack $ show m)) (M.lookup file m) $ \css -> do
