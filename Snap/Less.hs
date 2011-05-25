@@ -112,6 +112,7 @@ reloadLessDirectory (LessDirectory dir lsMVar) = liftIO $ do
 renderLess :: MonadSnap m => LessState -> m ()
 renderLess (LessState m) = do
     file <- liftM rqPathInfo getRequest
+    guard $ M.member file m
     flip (maybe (writeBS $ B.pack $ show m)) (M.lookup file m) $ \css -> do
         modifyResponse $ setContentType "text/css; charset=utf-8"
         writeBS css
