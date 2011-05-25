@@ -54,10 +54,9 @@ loadStylesheet file = do
     case mLessc of
         Nothing    -> return $ Left "Executable `lessc' could not be found"
         Just lessc -> do
-            (ex, css, err) <- readProcessWithExitCode' lessc [file, stdout] ""
+            (ex, css, err) <- readProcessWithExitCode' lessc [file] ""
             return $ if (ex /= ExitSuccess) then Left (file ++ "\n" ++ B.unpack err) else Right css
-  where
-    stdout = "/dev/stdout"
+
 
 
 loadStylesheets :: FilePath -> IO (Either String LessState)
