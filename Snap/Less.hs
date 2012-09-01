@@ -21,7 +21,7 @@ import           Control.Concurrent
 import           Control.Monad
 import           Control.Monad.Trans
 import qualified Data.Map as M
-import           Snap.Types hiding (dir)
+import           Snap.Core hiding (dir)
 import           System.Directory
 import           System.Directory.Tree
 import           System.Exit

@@ -1,5 +1,5 @@
 Name:                snap-less
-Version:             0.1
+Version:             0.2
 Synopsis:            Less stylesheets with the Snap web framework.
 Description:         A bit of glue code that makes it easy to use Less stylesheets (http://lesscss.org) with Snap (http://snapframework.com).
 Homepage:            http://github.com/duairc/snap-less
@@ -20,7 +20,8 @@ Library
       snap-core,
       process,
       directory-tree,
-      monads-fd,
+      mtl,
+--      smonads-fd,
       containers,
       bytestring,
       directory
