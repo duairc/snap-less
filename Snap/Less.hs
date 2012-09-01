@@ -21,7 +21,7 @@ import           Control.Concurrent
 import           Control.Monad
 import           Control.Monad.Trans
 import qualified Data.Map as M
-import           Snap.Types hiding (dir)
+import           Snap.Core hiding (dir)
 import           System.Directory
 import           System.Directory.Tree
 import           System.Exit
@@ -54,10 +54,9 @@ loadStylesheet file = do
     case mLessc of
         Nothing    -> return $ Left "Executable `lessc' could not be found"
         Just lessc -> do
-            (ex, css, err) <- readProcessWithExitCode' lessc [file, stdout] ""
+            (ex, css, err) <- readProcessWithExitCode' lessc [file] ""
             return $ if (ex /= ExitSuccess) then Left (file ++ "\n" ++ B.unpack err) else Right css
-  where
-    stdout = "/dev/stdout"
+
 
 
 loadStylesheets :: FilePath -> IO (Either String LessState)
@@ -113,6 +112,7 @@ reloadLessDirectory (LessDirectory dir lsMVar) = liftIO $ do
 renderLess :: MonadSnap m => LessState -> m ()
 renderLess (LessState m) = do
     file <- liftM rqPathInfo getRequest
+    guard $ M.member file m
     flip (maybe (writeBS $ B.pack $ show m)) (M.lookup file m) $ \css -> do
         modifyResponse $ setContentType "text/css; charset=utf-8"
         writeBS css
